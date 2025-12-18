@@ -1,8 +1,8 @@
-node_modules
+node_modules/
 .env
-.env.*
-artifacts
-cache
-frontend/node_modules
-frontend/dist
+.cache/
+artifacts/
+coverage/
+dist/
+frontend/dist/
 .DS_Store
