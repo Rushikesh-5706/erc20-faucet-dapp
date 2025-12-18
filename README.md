@@ -124,52 +124,52 @@ All numeric values are returned as **strings**.
 ## Screenshots 📸
 
 ### 1. Wallet Connected
-![Wallet Connected](screenshots/01_wallet_connected.png)
+![Wallet Connected](screenshots/01-wallet-connected.png)
 
 ---
 
 ### 2. Token Contract Verified on Etherscan
-![Token Verified](screenshots/02_token_verified.png)
+![Token Verified](screenshots/02-token-verified-etherscan.png)
 
 ---
 
 ### 3. Faucet Contract Verified on Etherscan
-![Faucet Verified](screenshots/03_faucet_verified.png)
+![Faucet Verified](screenshots/03-faucet-verified-etherscan.png)
 
 ---
 
 ### 4. Successful Deployment
-![Deployment](screenshots/04_successful_deploy.png)
+![Deployment](screenshots/04-contract-deployment-success.png)
 
 ---
 
 ### 5. Request Tokens – MetaMask Popup
-![Request Popup](screenshots/05_request_popup.png)
+![Request Popup](screenshots/05-request-token-popup.png)
 
 ---
 
 ### 6. Token Claim Successful
-![Request Success](screenshots/06_request_success.png)
+![Request Success](screenshots/06-request-token-success.png)
 
 ---
 
 ### 7. Token Balance Updated
-![Balance Updated](screenshots/07_balance_updated.png)
+![Balance Updated](screenshots/07-balance-updated-after-claim.png)
 
 ---
 
 ### 8. Cooldown Enforcement (Revert Error)
-![Cooldown Error](screenshots/08_cooldown_error.png)
+![Cooldown Error](screenshots/08-cooldown-error.png)
 
 ---
 
 ### 9. Evaluation Interface (`window.__EVAL__`)
-![Eval Interface](screenshots/09_window_eval.png)
+![Eval Interface](screenshots/09-docker-health.png)
 
 ---
 
 ### 10. Docker Health Check
-![Docker Health](screenshots/10_docker_health.png)
+![Docker Health](screenshots/10-window-eval-interface.png)
 
 
 Each screenshot is clearly named and referenced in this README.
@@ -262,5 +262,6 @@ A full video walkthrough is provided showing:
 - Balance update
 - Docker running
 
+(Video link added in submission portal)
 ---
 
