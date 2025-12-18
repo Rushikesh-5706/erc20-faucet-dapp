@@ -1,5 +1,4 @@
-
-# ERC-20 Faucet DApp 🚰
+# ERC-20 Faucet DApp 
 
 ## Project Overview
 
@@ -92,7 +91,7 @@ Both contracts are **verified on Etherscan**.
 
 ---
 
-## Evaluation Interface (`window.__EVAL__`) ✅
+## Evaluation Interface (`window.__EVAL__`) 
 
 The frontend exposes a global evaluation object used for automated testing.
 
@@ -124,24 +123,60 @@ All numeric values are returned as **strings**.
 
 ## Screenshots 📸
 
-> Screenshots are included in the repository under the screenshots/ folder.
+### 1. Wallet Connected
+![Wallet Connected](screenshots/01_wallet_connected.png)
 
-1. Wallet Connected  
-2. Token Contract Verified on Etherscan  
-3. Faucet Contract Verified on Etherscan  
-4. Successful Deployment Output  
-5. Request Tokens MetaMask Popup  
-6. Successful Token Claim Transaction  
-7. Token Balance Updated  
-8. Cooldown Error (Revert Message)  
-9. `window.__EVAL__` Console Validation  
-10. Docker Health Endpoint (HTTP 200)
+---
+
+### 2. Token Contract Verified on Etherscan
+![Token Verified](screenshots/02_token_verified.png)
+
+---
+
+### 3. Faucet Contract Verified on Etherscan
+![Faucet Verified](screenshots/03_faucet_verified.png)
+
+---
+
+### 4. Successful Deployment
+![Deployment](screenshots/04_successful_deploy.png)
+
+---
+
+### 5. Request Tokens – MetaMask Popup
+![Request Popup](screenshots/05_request_popup.png)
+
+---
+
+### 6. Token Claim Successful
+![Request Success](screenshots/06_request_success.png)
+
+---
+
+### 7. Token Balance Updated
+![Balance Updated](screenshots/07_balance_updated.png)
+
+---
+
+### 8. Cooldown Enforcement (Revert Error)
+![Cooldown Error](screenshots/08_cooldown_error.png)
+
+---
+
+### 9. Evaluation Interface (`window.__EVAL__`)
+![Eval Interface](screenshots/09_window_eval.png)
+
+---
+
+### 10. Docker Health Check
+![Docker Health](screenshots/10_docker_health.png)
+
 
 Each screenshot is clearly named and referenced in this README.
 
 ---
 
-## Docker Setup 🐳
+## Docker Setup 
 
 The application is fully Dockerized.
 
@@ -155,7 +190,7 @@ rushi5706/erc20-faucet-dapp:latest
 Create a `.env` file (or use `.env.example`):
 
 ```
-VITE_RPC_URL=https://eth-sepolia.g.alchemy.com/v2/YOUR_KEY
+VITE_RPC_URL=https://eth-sepolia.g.alchemy.com/v2/hejw0QbjGAV_0YqvM3Qr4
 VITE_TOKEN_ADDRESS=0x6aa17d210A8a46843D584B7e11CB7C195e63FAd5
 VITE_FAUCET_ADDRESS=0x1e0910fB0C06EE8395afB468edC6e7C6BF3BfC15
 ```
@@ -217,7 +252,7 @@ erc20-faucet-dapp/
 
 ---
 
-## Video Demo 🎥
+## Video Demo 
 
 A full video walkthrough is provided showing:
 - Wallet connection
@@ -226,27 +261,6 @@ A full video walkthrough is provided showing:
 - Cooldown rejection
 - Balance update
 - Docker running
-- Evaluation interface validation
-
-(Video link added in submission portal)
 
 ---
 
-## Final Notes
-
-This project was built carefully following:
-- Task instructions
-- Discord guidelines
-- Evaluation requirements
-
-Special focus was given to:
-- On-chain enforcement (no shortcuts)
-- Clear error handling
-- Docker reproducibility
-- Evaluation readiness
-
-This project represents real-world Web3 engineering practices.
-
----
-
-✅ **Status: READY FOR SUBMISSION**
