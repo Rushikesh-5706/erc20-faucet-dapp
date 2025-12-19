@@ -1,61 +1,43 @@
-import { ethers } from "ethers";
+import { ethers } from "ethers"
+import FaucetTokenArtifact from "../abis/FaucetToken.json"
+import TokenFaucetArtifact from "../abis/TokenFaucet.json"
 
-const RPC_URL = import.meta.env.VITE_RPC_URL;
-const TOKEN_ADDRESS = import.meta.env.VITE_TOKEN_ADDRESS;
-const FAUCET_ADDRESS = import.meta.env.VITE_FAUCET_ADDRESS;
+const FaucetTokenABI = FaucetTokenArtifact.abi
+const TokenFaucetABI = TokenFaucetArtifact.abi
 
-let provider;
-let signer;
+export const getProvider = () =>
+  new ethers.BrowserProvider(window.ethereum)
 
-const tokenAbi = [
-  "function balanceOf(address) view returns (uint256)"
-];
-
-const faucetAbi = [
-  "function requestTokens()",
-  "function canClaim(address) view returns (bool)",
-  "function remainingAllowance(address) view returns (uint256)"
-];
-
-export async function connectWallet() {
-  if (!window.ethereum) {
-    throw new Error("MetaMask not found");
-  }
-
-  await window.ethereum.request({ method: "eth_requestAccounts" });
-  provider = new ethers.BrowserProvider(window.ethereum);
-  signer = await provider.getSigner();
-  return await signer.getAddress();
+export const getSigner = async () => {
+  const provider = getProvider()
+  return await provider.getSigner()
 }
 
-export function getProvider() {
-  if (!provider) {
-    provider = new ethers.JsonRpcProvider(RPC_URL);
-  }
-  return provider;
-}
+export const getFaucetContract = async () => {
+  const signer = await getSigner()
 
-export async function getSigner() {
-  if (!signer) {
-    await connectWallet();
-  }
-  return signer;
-}
-
-export async function getTokenContract() {
   return new ethers.Contract(
-    TOKEN_ADDRESS,
-    tokenAbi,
-    getProvider()
-  );
+    import.meta.env.VITE_FAUCET_ADDRESS,
+    TokenFaucetABI,
+    signer
+  )
 }
 
-export async function getFaucetContract(withSigner = false) {
-  const baseProvider = withSigner ? await getSigner() : getProvider();
+export const getTokenContractFromFaucet = async () => {
+  const provider = getProvider()
+
+  const faucet = new ethers.Contract(
+    import.meta.env.VITE_FAUCET_ADDRESS,
+    TokenFaucetABI,
+    provider
+  )
+
+  const tokenAddress = await faucet.token()
+
   return new ethers.Contract(
-    FAUCET_ADDRESS,
-    faucetAbi,
-    baseProvider
-  );
+    tokenAddress,
+    FaucetTokenABI,
+    provider
+  )
 }
 

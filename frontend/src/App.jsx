@@ -1,102 +1,115 @@
-import { useEffect, useState } from "react";
-import { ethers } from "ethers";
+import { useEffect, useState } from "react"
+import { ethers } from "ethers"
 import {
-  getSigner,
-  getTokenContract,
-  getFaucetContract
-} from "./utils/contracts";
+  getProvider,
+  getFaucetContract,
+  getTokenContractFromFaucet,
+} from "./utils/contracts"
 
 function App() {
-  const [address, setAddress] = useState(null);
-  const [balance, setBalance] = useState("0");
-  const [canClaim, setCanClaim] = useState(false);
-  const [remaining, setRemaining] = useState("0");
-  const [error, setError] = useState("");
+  const [account, setAccount] = useState(null)
+  const [balance, setBalance] = useState("0.0")
+  const [canClaim, setCanClaim] = useState(false)
+  const [remaining, setRemaining] = useState("0")
+  const [loading, setLoading] = useState(false)
 
-  // Connect MetaMask wallet
-  async function connectWallet() {
+  /* -------------------- WALLET CONNECT -------------------- */
+  const connectWallet = async () => {
+    if (!window.ethereum) {
+      alert("MetaMask not found")
+      return
+    }
+
+    const provider = getProvider()
+    const accounts = await provider.send("eth_requestAccounts", [])
+    setAccount(accounts[0])
+  }
+
+  /* -------------------- LOAD BALANCE -------------------- */
+  const loadBalance = async () => {
+    if (!account) return
+
+    const token = await getTokenContractFromFaucet()
+    const bal = await token.balanceOf(account)
+    setBalance(ethers.formatUnits(bal, 18))
+  }
+
+  /* -------------------- LOAD FAUCET STATE -------------------- */
+  const loadFaucetState = async () => {
+    if (!account) return
+
+    const faucet = await getFaucetContract()
+
+    const eligible = await faucet.canClaim(account)
+    setCanClaim(eligible)
+
+    const remainingAmount = await faucet.remainingAllowance(account)
+    setRemaining(ethers.formatUnits(remainingAmount, 18))
+  }
+
+  /* -------------------- REQUEST TOKENS -------------------- */
+  const requestTokens = async () => {
     try {
-      if (!window.ethereum) throw new Error("MetaMask not found");
+      setLoading(true)
 
-      const signer = await getSigner();
-      const addr = await signer.getAddress();
-      setAddress(addr);
+      const faucet = await getFaucetContract()
+      const tx = await faucet.requestTokens()
+
+      await tx.wait()
+
+      await loadBalance()
+      await loadFaucetState()
     } catch (err) {
-      setError(err.message);
+      console.error(err)
+      alert("Transaction failed or rejected")
+    } finally {
+      setLoading(false)
     }
   }
 
-  // Load on-chain data (READS via RPC provider)
-  async function loadData(addr) {
-    try {
-      const provider = new ethers.JsonRpcProvider(
-        import.meta.env.VITE_RPC_URL
-      );
-
-      const token = getTokenContract(provider);
-      const faucet = getFaucetContract(provider);
-
-      const bal = await token.balanceOf(addr);
-      const eligible = await faucet.canClaim(addr);
-      const remain = await faucet.remainingAllowance(addr);
-
-      setBalance(bal.toString());
-      setCanClaim(eligible);
-      setRemaining(remain.toString());
-    } catch (err) {
-      setError(err.message);
-    }
-  }
-
-async function requestTokens() {
-  try {
-    setError("");
-
-    const signer = await getSigner();
-    const faucet = getFaucetContract(signer);
-
-    const tx = await faucet.requestTokens();
-    await tx.wait();
-
-    // reload data after successful claim
-    await loadData(address);
-  } catch (err) {
-    // Surface revert reason cleanly
-    setError(err.reason || err.message);
-  }
-}
-
-
-  // Reload data when wallet connects
+  /* -------------------- EFFECTS -------------------- */
   useEffect(() => {
-    if (address) {
-      loadData(address);
+    if (account) {
+      loadBalance()
+      loadFaucetState()
     }
-  }, [address]);
+  }, [account])
 
+  /* -------------------- UI -------------------- */
   return (
-    <div style={{ padding: "2rem", fontFamily: "sans-serif" }}>
-      <h2>ERC-20 Faucet DApp</h2>
+    <div style={{ padding: "40px", fontFamily: "Arial" }}>
+      <h1>ERC-20 Faucet (Sepolia)</h1>
 
-      {!address ? (
-        <button onClick={connectWallet}>Connect Wallet</button>
+      {!account ? (
+        <button onClick={connectWallet}>
+          Connect MetaMask
+        </button>
       ) : (
         <>
-          <p><b>Connected:</b> {address}</p>
-          <p><b>Token Balance:</b> {balance}</p>
-          <p><b>Can Claim:</b> {canClaim ? "Yes" : "No"}</p>
-          <p><b>Remaining Allowance:</b> {remaining}</p>
-          <button onClick={requestTokens} disabled={!canClaim}>
-          Request Tokens
-          </button>
+          <p><strong>Connected:</strong> {account}</p>
+          <p><strong>Token Balance:</strong> {balance}</p>
+          <p><strong>Remaining Allowance:</strong> {remaining}</p>
 
+          <button
+            onClick={requestTokens}
+            disabled={!canClaim || loading}
+            style={{
+              marginTop: "20px",
+              padding: "10px 20px",
+              cursor: canClaim ? "pointer" : "not-allowed",
+            }}
+          >
+            {loading
+              ? "Requesting..."
+              : canClaim
+              ? "Request Tokens"
+              : "Cooldown Active"}
+          </button>
         </>
       )}
-
-      {error && <p style={{ color: "red" }}>{error}</p>}
     </div>
-  );
+  )
 }
 
-export default App;
+export default App
 

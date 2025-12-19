@@ -1,53 +1,50 @@
+import { ethers } from "ethers"
 import {
-  connectWallet,
-  getTokenContract,
   getFaucetContract,
-} from "./contracts";
+  getTokenContractFromFaucet,
+} from "./contracts"
 
 window.__EVAL__ = {
-  // Connect wallet and return address
   connectWallet: async () => {
-    const address = await connectWallet();
-    if (!address) throw new Error("Wallet connection failed");
-    return address;
+    if (!window.ethereum) {
+      throw new Error("MetaMask not found")
+    }
+    const provider = new ethers.BrowserProvider(window.ethereum)
+    const accounts = await provider.send("eth_requestAccounts", [])
+    return accounts[0]
   },
 
-  // Request tokens and return tx hash
   requestTokens: async () => {
-    try {
-      const faucet = await getFaucetContract(true);
-      const tx = await faucet.requestTokens();
-      await tx.wait();
-      return tx.hash;
-    } catch (err) {
-      throw new Error(err.reason || err.message || "Token request failed");
+    const faucet = await getFaucetContract()
+    const tx = await faucet.requestTokens()
+    await tx.wait()
+    return tx.hash
+  },
+
+  getBalance: async (address) => {
+    const token = await getTokenContractFromFaucet()
+    const bal = await token.balanceOf(address)
+    return bal.toString()
+  },
+
+  canClaim: async (address) => {
+    const faucet = await getFaucetContract()
+    return await faucet.canClaim(address)
+  },
+
+  getRemainingAllowance: async (address) => {
+    const faucet = await getFaucetContract()
+    const remaining = await faucet.remainingAllowance(address)
+    return remaining.toString()
+  },
+
+  getContractAddresses: async () => {
+    const faucet = await getFaucetContract()
+    const token = await faucet.token()
+    return {
+      token,
+      faucet: import.meta.env.VITE_FAUCET_ADDRESS,
     }
   },
-
-  // Get ERC20 token balance (string)
-  getBalance: async (address) => {
-    const token = await getTokenContract();
-    return (await token.balanceOf(address)).toString();
-  },
-
-  // Check if user can claim
-  canClaim: async (address) => {
-    const faucet = await getFaucetContract();
-    return await faucet.canClaim(address);
-  },
-
-  // Get remaining lifetime allowance (string)
-  getRemainingAllowance: async (address) => {
-    const faucet = await getFaucetContract();
-    return (await faucet.remainingAllowance(address)).toString();
-  },
-
-  // Return deployed contract addresses
-  getContractAddresses: async () => {
-    return {
-      token: import.meta.env.VITE_TOKEN_ADDRESS,
-      faucet: import.meta.env.VITE_FAUCET_ADDRESS,
-    };
-  },
-};
+}
 
