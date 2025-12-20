@@ -252,16 +252,5 @@ erc20-faucet-dapp/
 
 ---
 
-## Video Demo 
 
-A full video walkthrough is provided showing:
-- Wallet connection
-- Initial balance
-- Successful claim
-- Cooldown rejection
-- Balance update
-- Docker running
-
-(Video link added in submission portal)
----
 
